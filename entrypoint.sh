@@ -1,12 +1,28 @@
 #!/bin/bash
-# Seed default config files into the home directory if they don't exist yet.
-# This handles the case where an empty .devhome is mounted over /home/dev.
+# Runs as root. Adjusts the dev user's UID/GID to match the host,
+# seeds default dotfiles, then drops to the dev user.
 
-# Fix ownership of the mounted home directory
-sudo chown -R "$(id -u):$(id -g)" "$HOME"
+USERNAME="dev"
+TARGET_UID="${HOST_UID:-1000}"
+TARGET_GID="${HOST_GID:-1000}"
+CURRENT_UID=$(id -u "$USERNAME")
+CURRENT_GID=$(id -g "$USERNAME")
 
-if [ ! -f "$HOME/.vimrc" ]; then
-    cp -a /etc/skel-dev/. "$HOME"/
+if [ "$TARGET_GID" != "$CURRENT_GID" ]; then
+    groupmod -g "$TARGET_GID" "$USERNAME"
 fi
 
-exec "$@"
+if [ "$TARGET_UID" != "$CURRENT_UID" ]; then
+    usermod -u "$TARGET_UID" "$USERNAME"
+fi
+
+export HOME="/home/$USERNAME"
+chown -R "$TARGET_UID:$TARGET_GID" "$HOME"
+
+# Seed default config files if this is the first run with a mounted home
+if [ ! -f "$HOME/.vimrc" ]; then
+    cp -a /etc/skel-dev/. "$HOME"/
+    chown -R "$TARGET_UID:$TARGET_GID" "$HOME"
+fi
+
+exec setpriv --reuid="$TARGET_UID" --regid="$TARGET_GID" --init-groups "$@"

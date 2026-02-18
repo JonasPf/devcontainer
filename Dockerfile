@@ -54,7 +54,7 @@ RUN mkdir -p ${HOME}/.vim/backup ${HOME}/.vim/swp ${HOME}/.vim/undo
 USER root
 RUN cp -a ${HOME}/. /etc/skel-dev/ && chown -R ${USERNAME}:${USERNAME} /etc/skel-dev
 COPY --chmod=755 entrypoint.sh /usr/local/bin/entrypoint.sh
-USER ${USERNAME}
 
+# Run entrypoint as root so it can adjust UID/GID, then exec as dev
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["fish"]

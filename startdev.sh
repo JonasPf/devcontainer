@@ -58,6 +58,8 @@ fi
 # Run the container
 exec podman run -it --rm \
     $PORT_FLAGS \
+    -e HOST_UID="$(id -u)" \
+    -e HOST_GID="$(id -g)" \
     -v "$(pwd):/work" \
     -v "$(pwd)/$DEVHOME:/home/dev" \
     -w /work \
