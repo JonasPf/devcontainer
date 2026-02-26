@@ -2,6 +2,9 @@
 set -e
 
 IMAGE="devcontainer"
+DIRNAME="$(basename "$(pwd)" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]/-/g')"
+SUFFIX="$(head -c4 /dev/urandom | xxd -p)"
+CONTAINER_NAME="dev-${DIRNAME}-${SUFFIX}"
 DEVHOME=".devhome"
 CONFIG="$DEVHOME/containerconfig.json"
 SKIP_PORTS=false
@@ -57,6 +60,7 @@ fi
 
 # Run the container
 exec podman run -it --rm \
+    --name "$CONTAINER_NAME" \
     $PORT_FLAGS \
     -e HOST_UID="$(id -u)" \
     -e HOST_GID="$(id -g)" \
