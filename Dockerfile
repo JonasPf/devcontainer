@@ -44,7 +44,8 @@ ENV PATH="${HOME}/.local/bin:${PATH}"
 # Fish config (vim mode + bat alias)
 RUN mkdir -p ${HOME}/.config/fish \
     && echo 'fish_vi_key_bindings' >> ${HOME}/.config/fish/config.fish \
-    && echo 'alias bat="batcat"' >> ${HOME}/.config/fish/config.fish
+    && echo 'alias bat="batcat"' >> ${HOME}/.config/fish/config.fish \
+    && echo 'alias danger-claude="claude --dangerously-skip-permissions"' >> ${HOME}/.config/fish/config.fish
 
 # Vim config
 COPY --chown=${USERNAME}:${USERNAME} vimrc ${HOME}/.vimrc
