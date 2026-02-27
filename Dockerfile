@@ -41,6 +41,12 @@ WORKDIR ${HOME}
 RUN curl -fsSL https://claude.ai/install.sh | bash
 ENV PATH="${HOME}/.local/bin:${PATH}"
 
+# uv (Python package manager, required for spec-kit)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# spec-kit
+RUN uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+
 # Fish config (vim mode + bat alias)
 RUN mkdir -p ${HOME}/.config/fish \
     && echo 'fish_vi_key_bindings' >> ${HOME}/.config/fish/config.fish \
